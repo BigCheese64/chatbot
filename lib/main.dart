@@ -1,7 +1,8 @@
+import 'package:bot/types/responses.dart';
 import 'package:dialog_flowtter/dialog_flowtter.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
-
+import 'package:http/http.dart' as http;
 void main() {
   runApp(MyApp());
 }
@@ -46,7 +47,7 @@ class _HomeState extends State<Home> {
             ? HexColor('#3C3A3A')
             : HexColor('#BFBFBF'),
         title: Text(
-          'Flutter Bot',
+          'Trails Chat',
           style: TextStyle(
               color:
                   themeValue == Brightness.dark ? Colors.white : Colors.black),
@@ -120,14 +121,11 @@ class _HomeState extends State<Home> {
         true,
       );
     });
+    aiResponse AIresponse = await fetchAiResponse(text);
 
-    DetectIntentResponse response = await dialogFlowtter.detectIntent(
-      queryInput: QueryInput(text: TextInput(text: text)),
-    );
-
-    if (response.message == null) return;
+    if (AIresponse.text == "") return;
     setState(() {
-      addMessage(response.message!);
+      addMessage(Message(text: DialogText(text: [AIresponse.text])));
     });
   }
 
@@ -195,8 +193,9 @@ class _MessageContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     return Container(
-      constraints: BoxConstraints(maxWidth: 250),
+      constraints: BoxConstraints(maxWidth: screenWidth*.8),
       child: LayoutBuilder(
         builder: (context, constrains) {
           return Container(
